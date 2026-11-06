@@ -22,10 +22,11 @@
 
 ## Next engineering gate
 
-1. Verify the Hetzner CLI context and exact server state. Generate cloud-init from the local SSH public key and rebuild the authorized server with a current Ubuntu LTS image. Verify SSH and cloud-init. See [bootstrap runbook](ops/VPS_BOOTSTRAP.md).
-2. Fix H.264 frame assembly/stream transitions and retry behavior locally. Require clean decoded segments.
-3. Run the lab CG6 bridge on the VPS across networks. Record selected ICE path, bitrate, gaps, decoded quality, and reconnects. Decide whether the VPS-only path is viable or a store-side gateway is needed.
-4. Only then implement the private live viewer, continuous recording, and Drive-backed seven-day history.
+1. **At the shop now:** verify the current Wi-Fi connection, remap the three store CG6 devices, and test each with the existing Go bridge. Follow the [fresh-chat handoff](handoffs/STORE_CAMERA_ONBOARDING.md). Historical IPs may have changed; do not assume the previous survey still matches.
+2. Fix H.264 frame assembly/stream transitions and retry behavior. Require clean decoded segments.
+3. Then verify the Hetzner CLI context and exact server state; rebuild the authorized server with a current Ubuntu LTS image. See [bootstrap runbook](ops/VPS_BOOTSTRAP.md).
+4. Run a CG6 bridge on the VPS across networks. Record selected ICE path, bitrate, gaps, decoded quality, and reconnects. Decide whether the VPS-only path is viable or a store-side gateway is needed.
+5. Only then implement the private live viewer, continuous recording, and Drive-backed seven-day history.
 
 ## What is deliberately absent
 
@@ -38,3 +39,4 @@ After each meaningful change, append a dated entry with: action, environment, ex
 ### Log
 
 - **2026-11-06:** Created dedicated workspace and imported source-only Go bridge. Installed Go 1.27.3; focused tests and build passed. VPS and camera services remain unchanged.
+- **2026-11-06:** Owner moved work to the shop and prioritized three-camera on-site discovery and connection tests before the Hetzner CLI token handoff. No new store-camera mapping or live test has been performed yet.

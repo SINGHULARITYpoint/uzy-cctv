@@ -7,7 +7,7 @@ Private CCTV/NVR project for Uzy's NY Pizza. The first deliverable is a reliable
 1. Read [current status](docs/STATUS.md) for what has actually been tested and what is still unproven.
 2. Read the [MVP PRD](docs/PRD.md) for scope and acceptance criteria.
 3. Read [architecture](docs/ARCHITECTURE.md) and the [decision records](docs/decisions/).
-4. Follow the [roadmap](docs/ROADMAP.md). The next gate is a clean VPS bootstrap followed by a remote one-camera stream test.
+4. Follow the [roadmap](docs/ROADMAP.md). The next gate is [on-site onboarding of the three store cameras](docs/handoffs/STORE_CAMERA_ONBOARDING.md), followed by VPS bootstrap and a remote stream test.
 5. Use the [device inventory](docs/DEVICES.md) for fleet context. More detailed LAN identifiers live in ignored `local/private/store-network.md` on this laptop.
 
 The folder is a local Git repository. Open this root folder in VS Code, Antigravity, Claude Code, or another editor. `AGENTS.md` is the shared working context; `CLAUDE.md` and `GEMINI.md` point to it.

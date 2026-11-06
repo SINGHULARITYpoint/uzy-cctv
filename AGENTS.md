@@ -13,6 +13,7 @@ Build an owner-only CCTV/NVR service for three owned GMK CG6 cameras: secure rem
 - A one-minute follow-up selected a relay ICE path even on the home LAN. Do not assume a direct LAN path or a dependable remote relay.
 - The VPS was identified but had not been rebuilt at the last verified check. Check live state before acting.
 - Google Drive is proposed for the seven-day archive; upload, indexing, retrieval, and playback are not yet implemented.
+- The immediate next task is on-site mapping and short connection tests for the three store cameras. The historical DHCP/MAC notes in ignored `local/private/store-network.md` must be rechecked on the current shop network. Defer the Hetzner token handoff and rebuild until store onboarding is recorded.
 
 ## Implementation rules
 
