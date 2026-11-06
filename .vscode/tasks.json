@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Bridge: test and build",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/scripts/build-bridge.ps1"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$go"
+    }
+  ]
+}

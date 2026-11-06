@@ -1,0 +1,36 @@
+#cloud-config
+hostname: uzy-cctv
+timezone: UTC
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - ffmpeg
+  - git
+  - jq
+  - ufw
+  - unattended-upgrades
+users:
+  - name: cameraops
+    gecos: Camera Operations
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - __SSH_PUBLIC_KEY__
+ssh_pwauth: false
+disable_root: true
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-cameraops.conf
+    permissions: '0644'
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+runcmd:
+  - [systemctl, reload, ssh]
+  - [ufw, default, deny, incoming]
+  - [ufw, allow, OpenSSH]
+  - [ufw, --force, enable]

@@ -1,0 +1,26 @@
+# Secrets and local state
+.env
+.env.*
+!.env.example
+**/auth.json
+**/*token*.tmp
+infra/generated/
+local/
+
+# Video, audio, captures, logs, and generated binaries
+*.h264
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.pcap
+*.pcapng
+*.log
+*.exe
+services/vico-bridge/bin/
+
+# Tooling
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*.code-workspace
