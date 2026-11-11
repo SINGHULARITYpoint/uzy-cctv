@@ -1,0 +1,11 @@
+# All listeners stay on loopback. Owner access will use a private tunnel.
+api:
+  listen: "127.0.0.1:1984"
+rtsp:
+  listen: "127.0.0.1:8554"
+webrtc:
+  listen: "127.0.0.1:8555"
+streams:
+  dining_area: "exec:/home/cameraops/bin/vico-cli devices media-probe __DINING__ --continuous --timeout 20s --output - --progress-every 1s --health-log /home/cameraops/.config/uzy-cctv/dining_area.health.log"
+  cash_register: "exec:/home/cameraops/bin/vico-cli devices media-probe __CASH__ --continuous --timeout 20s --output - --progress-every 1s --health-log /home/cameraops/.config/uzy-cctv/cash_register.health.log"
+  kitchen_back: "exec:/home/cameraops/bin/vico-cli devices media-probe __KITCHEN__ --continuous --timeout 20s --output - --progress-every 1s --health-log /home/cameraops/.config/uzy-cctv/kitchen_back.health.log"

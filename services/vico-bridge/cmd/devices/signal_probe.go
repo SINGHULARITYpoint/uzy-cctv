@@ -48,7 +48,7 @@ var signalProbeCmd = &cobra.Command{
 			return fmt.Errorf("authentication failed: %w", err)
 		}
 
-		ticket, err := requestWebRTCTicket(token, args[0])
+		ticket, err := requestWebRTCTicket(cmd.Context(), token, args[0])
 		if err != nil {
 			return err
 		}

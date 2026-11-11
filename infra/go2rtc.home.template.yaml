@@ -1,0 +1,13 @@
+api:
+  listen: "127.0.0.1:1984"
+  static_dir: "local/home-dashboard/www"
+  allow_paths: ["/", "/api/ws"]
+rtsp:
+  listen: "127.0.0.1:18554"
+webrtc:
+  listen: ""
+  ice_servers: []
+exec:
+  allow_paths: ["services/vico-bridge/bin/vico-cli.exe"]
+streams:
+  home_camera: "exec:services/vico-bridge/bin/vico-cli.exe devices media-probe __HOME_CAMERA__ --continuous --timeout 20s --output - --health-log local/home-dashboard/bridge.log"

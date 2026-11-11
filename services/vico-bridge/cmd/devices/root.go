@@ -21,6 +21,7 @@ func init() {
 	devicesCmd.AddCommand(ticketCmd)
 	devicesCmd.AddCommand(signalProbeCmd)
 	devicesCmd.AddCommand(mediaProbeCmd)
+	devicesCmd.AddCommand(correlateCaptureCmd)
 }
 
 // GetDevicesCmd returns the devices command that provides access to device-related subcommands.

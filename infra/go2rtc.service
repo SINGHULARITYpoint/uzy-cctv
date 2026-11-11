@@ -1,0 +1,19 @@
+[Unit]
+Description=UZY private go2rtc restream
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cameraops
+Group=cameraops
+WorkingDirectory=/home/cameraops
+EnvironmentFile=/home/cameraops/.config/uzy-cctv/bridge.env
+ExecStart=/home/cameraops/bin/go2rtc -config /home/cameraops/.config/uzy-cctv/go2rtc.yaml
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

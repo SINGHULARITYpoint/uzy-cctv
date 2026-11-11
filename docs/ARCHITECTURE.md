@@ -1,7 +1,18 @@
 # Architecture: candidate CCTV pipeline
 
-**Status:** proposed, subject to one-camera remote transport and playback tests.
-**Updated:** November 6, 2026.
+**Status:** live view, recording, and playback were verified for the single home camera. The next target is three store cameras through the same Windows stack. The private VPS restream is reserved for later migration.
+**Updated:** November 7, 2026.
+
+## Development and promotion path
+
+```text
+Home test camera -> Windows Go bridge -> loopback go2rtc -> Live view
+                                           |
+                                           v
+                                     MediaMTX recorder -> local fMP4 archive -> History view
+```
+
+The Windows launcher uses the dedicated lab account and maps its single verified camera to `home_camera`. The [MediaMTX recorder](https://mediamtx.org/docs/features/record) pulls go2rtc over loopback RTSP continuously and writes H.264 as fragmented MP4 without transcoding. It uses one-second parts, approximately 30-second segments, and 168-hour retention. The [playback API](https://mediamtx.org/docs/features/playback) lists saved intervals from disk and remuxes the selected time into browser video. The dashboard uses advancing frames for live state and archive coverage for History. All three listeners bind to loopback, and the playback API permits the dashboard origin. For the on-site build, use a separate private store profile with one source alias and one recorder path per camera. Live view, saved coverage, playback and export use the same camera selection. Preserve the home profile and archive. Bound store recording sessions and stop the recorder after verification. The following diagram is the later deployment architecture.
 
 ```text
 Store: 3 powered GMK CG6 cameras
@@ -13,8 +24,8 @@ Hetzner CX23 (Nuremberg)
           |                         |
           | H.264 RTP               | health/events
           v                         v
-  live restream candidate      status endpoint
-  (go2rtc or equivalent)             |
+  go2rtc live restream        status endpoint
+  (loopback only)                    |
           |                           |
           +----------> private owner dashboard <---------+
           |
@@ -37,7 +48,7 @@ Later, separately: restream -> person/zone detection -> activity view
 
 | Component | Responsibility | First proof required |
 |---|---|---|
-| Camera bridge | Obtain short-lived vendor ticket, wake camera, negotiate WebRTC, receive video, reconnect, expose stream and health. | Clean remote sample and automatic recovery. |
+| Camera bridge | Obtain short-lived vendor ticket, wake camera, negotiate WebRTC, receive video, reconnect, expose stream and health. | Deterministic local incomplete-frame recovery, then a clean remote sample with automatic recovery. |
 | Live restream | Serve browser-compatible live video to owner devices without one vendor session per viewer. | One camera plays remotely with measured latency. |
 | Recorder | Convert received H.264 into finalized timestamped segments without damaging frames. | Full decode and clock checks across start, stop, and reconnect. |
 | Archive queue | Upload completed segments, retry safely, verify bytes, and track local pressure. | Simulated upload outage and recovery. |
@@ -69,8 +80,7 @@ At 2 Mb/s per camera, three feeds ingest about 0.75 MB/s. A 20 GB local queue wo
 ## Evidence and unresolved design gates
 
 - Home lab: one powered CG6 maintained a 35-minute WebRTC session and delivered packets in 99.8% of observed seconds. A 30-minute ticket expiry did not end that active session. This says nothing about 24/7 reliability.
-- Long raw H.264 capture had decode errors. A one-minute frame-reassembly follow-up still had damaged frames and selected a remote relay candidate. Frame loss and stream switching need diagnosis.
-- An immediate restart once failed to receive an SDP answer. Retry logic was changed, but that exact recovery path has not been reverified in a real run.
-- The store-to-VPS path, three-camera concurrency, browser playback, automated Drive archive, and oldest-day retrieval remain untested.
+- Deeper RTP assembly enabled clean short samples, but two three-camera rounds still had multi-second complete-frame gaps while RTP arrived. Deterministic recovery and a bounded home-camera loss test now demonstrate recovery at an IDR. The home check did not establish that PLI accelerated recovery.
+- One short store-to-VPS path worked. Three-camera concurrency has been tested and failed its coverage gate. Local browser playback has been verified for the home camera. Three-camera browser playback, remote browser playback, automated Drive archive, and oldest-day retrieval remain unverified.
 
 See [research notes](research/CG6_TRANSPORT.md), [current status](STATUS.md), and [ADR 0003](decisions/0003-vendor-bridge.md).

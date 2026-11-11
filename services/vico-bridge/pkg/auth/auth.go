@@ -7,6 +7,7 @@ package auth
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -67,12 +68,16 @@ type LoginResponse struct {
 //   - string: The authentication token if successful
 //   - error: Any error encountered during the authentication process
 func Authenticate() (string, error) {
+	return AuthenticateContext(context.Background())
+}
+
+func AuthenticateContext(ctx context.Context) (string, error) {
 	// Try to get a cached token first
 	cacheManager, err := cache.NewTokenCacheManager()
 	if err != nil {
 		// If we can't create a cache manager, fall back to direct authentication
 		logDebug("Warning: Could not create token cache manager: %v\n", err)
-		return authenticateDirectly()
+		return authenticateDirectly(ctx)
 	}
 
 	token, valid := cacheManager.GetToken()
@@ -84,7 +89,7 @@ func Authenticate() (string, error) {
 
 	// No valid cached token, authenticate and cache the new token
 	logDebug("No valid cached token found, authenticating directly\n")
-	token, err = authenticateDirectly()
+	token, err = authenticateDirectly(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -107,7 +112,7 @@ func Authenticate() (string, error) {
 // Returns:
 //   - string: The authentication token if successful
 //   - error: Any error encountered during the authentication process
-func authenticateDirectly() (string, error) {
+func authenticateDirectly(ctx context.Context) (string, error) {
 	// Get credentials from environment variables
 	email := os.Getenv("VICOHOME_EMAIL")
 	password := os.Getenv("VICOHOME_PASSWORD")
@@ -128,7 +133,7 @@ func authenticateDirectly() (string, error) {
 		return "", fmt.Errorf("error marshaling login request: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", "https://api-us.vicohome.io/account/login", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(ctx, "POST", "https://api-us.vicohome.io/account/login", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return "", fmt.Errorf("error creating request: %w", err)
 	}
@@ -321,7 +326,7 @@ func ExecuteWithRetry(req *http.Request) ([]byte, error) {
 		}
 
 		// Get a new token directly (bypass cache)
-		token, err := authenticateDirectly()
+		token, err := authenticateDirectly(req.Context())
 		if err != nil {
 			return nil, fmt.Errorf("failed to refresh token: %w", err)
 		}
@@ -336,7 +341,7 @@ func ExecuteWithRetry(req *http.Request) ([]byte, error) {
 		}
 
 		// Create a new request with the same parameters but new token
-		newReq, err := http.NewRequest(req.Method, req.URL.String(), nil)
+		newReq, err := http.NewRequestWithContext(req.Context(), req.Method, req.URL.String(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("error creating request for retry: %w", err)
 		}

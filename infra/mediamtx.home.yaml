@@ -1,0 +1,29 @@
+readTimeout: 55s
+rtsp: false
+rtmp: false
+hls: false
+webrtc: false
+srt: false
+moq: false
+
+playback: true
+playbackAddress: 127.0.0.1:9996
+playbackAllowOrigins: ["http://127.0.0.1:1984"]
+authInternalUsers:
+  - user: any
+    ips: ["127.0.0.1"]
+    permissions:
+      - action: playback
+        path: home_camera
+
+paths:
+  home_camera:
+    source: rtsp://127.0.0.1:18554/home_camera
+    sourceOnDemand: false
+    rtspTransport: tcp
+    record: true
+    recordPath: local/home-dashboard/recordings/%path/%Y-%m-%d_%H-%M-%S-%f_%z
+    recordFormat: fmp4
+    recordPartDuration: 1s
+    recordSegmentDuration: 30s
+    recordDeleteAfter: 168h

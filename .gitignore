@@ -20,6 +20,8 @@ local/
 services/vico-bridge/bin/
 
 # Tooling
+__pycache__/
+*.py[cod]
 .DS_Store
 Thumbs.db
 .idea/

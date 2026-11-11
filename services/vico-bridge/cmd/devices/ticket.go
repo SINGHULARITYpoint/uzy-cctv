@@ -2,6 +2,7 @@ package devices
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -86,7 +87,7 @@ var ticketCmd = &cobra.Command{
 			return fmt.Errorf("authentication failed: %w", err)
 		}
 
-		response, err := requestWebRTCTicket(token, args[0])
+		response, err := requestWebRTCTicket(cmd.Context(), token, args[0])
 		if err != nil {
 			return err
 		}
@@ -101,7 +102,7 @@ var ticketCmd = &cobra.Command{
 	},
 }
 
-func requestWebRTCTicket(token, serialNumber string) (webRTCTicketResponse, error) {
+func requestWebRTCTicket(ctx context.Context, token, serialNumber string) (webRTCTicketResponse, error) {
 	requestBody := webRTCTicketRequest{
 		Language:                  "en",
 		CountryNo:                 "US",
@@ -117,7 +118,7 @@ func requestWebRTCTicket(token, serialNumber string) (webRTCTicketResponse, erro
 		return webRTCTicketResponse{}, fmt.Errorf("encode ticket request: %w", err)
 	}
 
-	request, err := http.NewRequest(http.MethodPost, webRTCTicketEndpoint, bytes.NewReader(encoded))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, webRTCTicketEndpoint, bytes.NewReader(encoded))
 	if err != nil {
 		return webRTCTicketResponse{}, fmt.Errorf("create ticket request: %w", err)
 	}
@@ -140,14 +141,14 @@ func requestWebRTCTicket(token, serialNumber string) (webRTCTicketResponse, erro
 	return response, nil
 }
 
-func wakeDevice(token, serialNumber string) (int, error) {
+func wakeDevice(ctx context.Context, token, serialNumber string) (int, error) {
 	body, err := json.Marshal(map[string]string{
 		"countryNo": "US", "language": "en", "serialNumber": serialNumber,
 	})
 	if err != nil {
 		return 0, fmt.Errorf("encode wake request: %w", err)
 	}
-	request, err := http.NewRequest(http.MethodPost, wakeDeviceEndpoint, bytes.NewReader(body))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, wakeDeviceEndpoint, bytes.NewReader(body))
 	if err != nil {
 		return 0, fmt.Errorf("create wake request: %w", err)
 	}
